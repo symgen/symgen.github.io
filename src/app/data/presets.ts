@@ -1,16 +1,19 @@
 export interface Preset {
   id: string
   name: string
+  description?: string
 }
 
 export const presets: Preset[] = [
   {
     id: "9cb0e66a-9937-465d-a188-2c4c4ae2401f",
-    name: "Grammatical Standard English",
+    name: "Financial data Question Answering",
+    description: "Given an JSON object with financial data, answer questions about it.",
   },
   {
     id: "61eb0e32-2391-4cd3-adc3-66efe09bc0b7",
-    name: "Summarize for a 2nd grader",
+    name: "Describe Legal Cases",
+    description: "Given a legal case metadata, describe it in plain English.",
   },
   {
     id: "a4e1fa51-f4ce-4e45-892c-224030a00bdd",

@@ -45,6 +45,7 @@ import { PresetShare } from "./components/preset-share";
 import { PresetActions } from "./components/preset-actions";
 import { PresetSelector } from "./components/preset-selector";
 import { ModelSelector } from "./components/model-selector";
+import { ExampleSelector } from "./components/example-selector";
 
 import { cn } from "@/lib/utils";
 
@@ -102,7 +103,7 @@ const AUTHORS = [
 const BASE_PATH = "";
 
 const Headline = () => (
-  <PageHeader className="page-header pb-8 pt-4">
+  <PageHeader className="page-header pb-12 pt-4">
     <Link
       href="/docs/changelog"
       className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium"
@@ -115,7 +116,7 @@ const Headline = () => (
     <PageHeaderHeading className="hidden md:block">{TITLE}</PageHeaderHeading>
     <PageHeaderHeading className="md:hidden">Examples</PageHeaderHeading>
     <PageHeaderDescription>
-      We propose SymGen, a method enabling easier <Em>validation</Em> of
+      We propose SymGen, a method enabling easier <em className="font-serif	">validation</em> of
       LLM&apos;s output.
     </PageHeaderDescription>
     <section className="flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
@@ -139,11 +140,9 @@ const Playground = () => {
         <div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
           <h2 className="text-lg font-semibold">Playground</h2>
           <div className="ml-auto flex w-full space-x-2 sm:justify-end">
-            <PresetSelector presets={presets} />
-            <PresetSave />
+            <ExampleSelector examples={presets} />
             <div className="hidden space-x-2 md:flex">
               <CodeViewer />
-              <PresetShare />
             </div>
             <PresetActions />
           </div>
