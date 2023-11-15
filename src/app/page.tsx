@@ -27,6 +27,12 @@ import {
 } from "@/components/ui/hover-card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   PageHeader,
@@ -126,7 +132,7 @@ const Headline = () => (
   </PageHeader>
 );
 
-const PlayGround = () => {
+const Playground = () => {
   return (
     <>
       <div className="hidden h-full flex-col md:flex">
@@ -144,7 +150,7 @@ const PlayGround = () => {
         </div>
       </div>
       <Separator />
-      <Tabs defaultValue="complete" className="flex-1">
+      <Tabs defaultValue="symgen" className="flex-1">
         <div className="container h-full py-6">
           <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
             <div className="hidden flex-col space-y-4 sm:flex md:order-2">
@@ -160,54 +166,43 @@ const PlayGround = () => {
                   </HoverCardContent>
                 </HoverCard>
                 <TabsList className="grid grid-cols-2">
-                  <TabsTrigger value="complete">
-                    {/* <BadgeCheck size={16}/> */}
-                    <span className="pl-1">Default</span>
-                  </TabsTrigger>
-
-                  <TabsTrigger value="edit">
+                  <TabsTrigger value="symgen">
                     <BadgeCheck size={16} />
                     <span className="pl-1">SymGen</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="default">
+                    {/* <BadgeCheck size={16}/> */}
+                    <span className="pl-1">Default</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
               <ModelSelector types={types} models={models} />
             </div>
             <div className="md:order-1">
-              <TabsContent value="complete" className="mt-0 border-0 p-0">
+              <TabsContent value="default" className="mt-0 border-0 p-0">
                 <div className="flex h-full flex-col space-y-4">
                   <Textarea
                     placeholder="Write a tagline for an ice cream shop"
                     className="min-h-[400px] flex-1 p-4 md:min-h-[700px] lg:min-h-[700px]"
                   />
                   <div className="flex items-center space-x-2">
-                    <Button>Submit</Button>
-                    <Button variant="secondary">
-                      <span className="sr-only">Show history</span>
-                      <CounterClockwiseClockIcon className="h-4 w-4" />
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground shadow h-9 px-4 py-2 opacity-50">
+                          Submit
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs overflow-wrap whitespace-normal text-left">
+                          <p>
+                            Direct interaction with OpenAI API models will be
+                            supported soon.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </TabsContent>
-              <TabsContent value="insert" className="mt-0 border-0 p-0">
-                <div className="flex flex-col space-y-4">
-                  <div className="grid h-full grid-rows-2 gap-6 lg:grid-cols-2 lg:grid-rows-1">
-                    <Textarea
-                      placeholder="We're writing to [inset]. Congrats from OpenAI!"
-                      className="h-full min-h-[300px] lg:min-h-[700px] xl:min-h-[700px]"
-                    />
-                    <div className="rounded-md border bg-muted"></div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button>Submit</Button>
-                    <Button variant="secondary">
-                      <span className="sr-only">Show history</span>
-                      <CounterClockwiseClockIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="edit" className="mt-0 border-0 p-0">
+              <TabsContent value="symgen" className="mt-0 border-0 p-0">
                 <div className="flex flex-col space-y-4">
                   <div className="grid h-full gap-6 lg:grid-cols-2">
                     <div className="flex flex-col space-y-4">
@@ -230,11 +225,19 @@ const PlayGround = () => {
                     <div className="mt-[21px] min-h-[400px] rounded-md border bg-muted lg:min-h-[700px]" />
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button>Submit</Button>
-                    <Button variant="secondary">
-                      <span className="sr-only">Show history</span>
-                      <CounterClockwiseClockIcon className="h-4 w-4" />
-                    </Button>
+                  <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground shadow h-9 px-4 py-2 opacity-50">
+                          Submit
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs overflow-wrap whitespace-normal text-left">
+                          <p>
+                            Direct interaction with OpenAI API models will be
+                            supported soon.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </TabsContent>
@@ -252,7 +255,7 @@ export default function Home() {
       <div className="container min-h-screen relative p-16">
         <Headline />
         <div className="overflow-hidden rounded-[0.5rem] border bg-background shadow">
-          <PlayGround />
+          <Playground />
         </div>
       </div>
     </Theme>
