@@ -18,8 +18,6 @@ import {
 
 import dynamic from "next/dynamic";
 
-const NoSSR = dynamic(() => import("../components/no-ssr"), { ssr: false });
-
 const TITLE = "Towards Verifiable Text Generation with Symbolic References";
 
 const AUTHORS = [
@@ -68,6 +66,8 @@ const AUTHORS = [
   },
 ];
 
+const BASE_PATH = "";
+
 const AuthorHoverCard = (author: (typeof AUTHORS)[0]) => (
   <HoverCard.Root>
     <HoverCard.Trigger>
@@ -77,7 +77,7 @@ const AuthorHoverCard = (author: (typeof AUTHORS)[0]) => (
     </HoverCard.Trigger>
     <HoverCard.Content>
       <Flex gap="4">
-        <Avatar size="3" fallback="R" radius="large" src={author.avatar} />
+        <Avatar size="3" fallback="R" radius="large" src={BASE_PATH? (`${BASE_PATH}/${author.avatar}`) :(author.avatar)} />
         <Box>
           <Heading size="3" as="h3">
             {author.name}
