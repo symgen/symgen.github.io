@@ -22,7 +22,7 @@
     --muted: 210 40% 96.1%; 
     --muted-foreground: 215.4 16.3% 46.9%;
  
-    --accent: 210 40% 96.1%;
+    --accent: hsl(208.4,76.9%,47.5%);
     --accent-foreground: 222.2 47.4% 11.2%;
  
     --destructive: 0 84.2% 60.2%;
@@ -98,4 +98,22 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+
+.rendered-span {
+  white-space: nowrap;
+}
+
+.is-highlight {
+  background-color: var(--accent);
+  border-radius: 5px;
+}
+
+.is-highlight > .json-field strong {
+  color: white !important;
+}
+
+.is-highlight .json-value code {
+  color: white !important;
 }

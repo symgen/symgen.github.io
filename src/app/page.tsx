@@ -1,5 +1,5 @@
 "use client";
-
+import React, { RefObject, useRef, useState } from "react";
 import {
   Text,
   Strong,
@@ -33,6 +33,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import {
   PageHeader,
@@ -47,10 +48,11 @@ import { PresetSelector } from "./components/preset-selector";
 import { ModelSelector } from "./components/model-selector";
 import { ExampleSelector } from "./components/example-selector";
 
+import { JsonDisplay, SymgenTextRender } from "./symgen";
 import { cn } from "@/lib/utils";
 
 import { models, types } from "./data/models";
-import { presets } from "./data/presets";
+import { presets, examples, Example } from "./data/presets";
 
 const TITLE = "Towards Verifiable Text Generation with Symbolic References";
 
@@ -113,11 +115,13 @@ const Headline = () => (
       <span className="hidden sm:inline">Check our paper!</span>
       <ArrowRightIcon className="ml-1 h-4 w-4" />
     </Link>
-    <PageHeaderHeading className="hidden md:block">{TITLE}</PageHeaderHeading>
+    <PageHeaderHeading className="hidden tracking-tight		 md:block">
+      {TITLE}
+    </PageHeaderHeading>
     <PageHeaderHeading className="md:hidden">Examples</PageHeaderHeading>
     <PageHeaderDescription>
-      We propose SymGen, a method enabling easier <em className="font-serif	">validation</em> of
-      LLM&apos;s output.
+      We propose SymGen, a method enabling easier{" "}
+      <em className="font-serif	">validation</em> of LLM&apos;s output.
     </PageHeaderDescription>
     <section className="flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
       <Link href="/docs" className={cn(buttonVariants(), "rounded-[6px]")}>
@@ -132,6 +136,82 @@ const Headline = () => (
     </section>
   </PageHeader>
 );
+
+export function getFlattenedKeys(
+  obj: any,
+  prefix: (string | number)[] = []
+): (string | number)[][] {
+  if (typeof obj !== "object" || obj === null) {
+    return [prefix];
+  }
+
+  let keys: (string | number)[][] = [];
+  for (const [k, v] of Object.entries(obj)) {
+    const newPrefix = [...prefix, k];
+    if (Array.isArray(v)) {
+      for (let i = 0; i < v.length; i++) {
+        keys = keys.concat(getFlattenedKeys(v[i], newPrefix.concat(i)));
+      }
+    } else if (typeof v === "object" && v !== null) {
+      keys = keys.concat(getFlattenedKeys(v, newPrefix));
+    } else {
+      keys.push(newPrefix);
+    }
+  }
+  return keys;
+}
+
+interface SymGenComponentProps {
+  symGenData: Example;
+}
+
+const SymGenComponent = ({ symGenData }: SymGenComponentProps) => {
+
+  const jsonFieldRef = useRef(
+    getFlattenedKeys(symGenData["data"], []).reduce<RefsMap<HTMLDivElement>>(
+      (acc, element) => {
+        acc[element.toString()] = React.createRef();
+        return acc;
+      },
+      {}
+    )
+  );
+
+  return (
+    <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-2 max-h-[500px] w-full">
+        <Label htmlFor="input">JSON</Label>
+        <ScrollArea className="h-72 w-full p-6 rounded-md border text-sm">
+          <JsonDisplay data={symGenData["data"]} entryId={symGenData["id"] } jsonFieldRef={jsonFieldRef} />
+        </ScrollArea>
+      </div>
+
+      <div className="grid h-full gap-6 lg:grid-cols-2">
+        <div className="flex flex-1 flex-col space-y-2">
+          <Label htmlFor="input">Prompt</Label>
+          <Textarea
+            id="input"
+            defaultValue={symGenData["prompt"]}
+            className="flex-auto lg:max-h-80"
+          />
+        </div>
+        <div className="flex flex-col space-y-2">
+          <Label htmlFor="instructions">Generation</Label>
+          <div className="lg:min-h-80 rounded-md border px-3 py-2 text-sm h-80">
+            {/* {symGenData["symgenText"]} */}
+            <SymgenTextRender
+              symgenText={symGenData["symgenText"]}
+              data={symGenData["data"]}
+              isSymGen={true}
+              entryId={symGenData["id"]}
+              jsonFieldRef={jsonFieldRef}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Playground = () => {
   return (
@@ -203,28 +283,9 @@ const Playground = () => {
               </TabsContent>
               <TabsContent value="symgen" className="mt-0 border-0 p-0">
                 <div className="flex flex-col space-y-4">
-                  <div className="grid h-full gap-6 lg:grid-cols-2">
-                    <div className="flex flex-col space-y-4">
-                      <div className="flex flex-1 flex-col space-y-2">
-                        <Label htmlFor="input">Input</Label>
-                        <Textarea
-                          id="input"
-                          placeholder="We is going to the market."
-                          className="flex-1 lg:min-h-[580px]"
-                        />
-                      </div>
-                      <div className="flex flex-col space-y-2">
-                        <Label htmlFor="instructions">Instructions</Label>
-                        <Textarea
-                          id="instructions"
-                          placeholder="Fix the grammar."
-                        />
-                      </div>
-                    </div>
-                    <div className="mt-[21px] min-h-[400px] rounded-md border bg-muted lg:min-h-[700px]" />
-                  </div>
+                  <SymGenComponent symGenData={examples[0]} />
                   <div className="flex items-center space-x-2">
-                  <TooltipProvider>
+                    <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground shadow h-9 px-4 py-2 opacity-50">
                           Submit
