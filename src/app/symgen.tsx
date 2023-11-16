@@ -198,7 +198,7 @@ const splitHandlebarString = (symgenText: string): symgenTextSegment[] => {
     output.push({
       originalString: match.slice(1, match.length),
       isHandlebar: true,
-      cleanedString: `{{ ${normalizedVariable} }}`,
+      cleanedString: normalizedVariable,
       variables: flattenVariables,
     });
     lastIndex = offset + match.length;
@@ -263,7 +263,7 @@ export const SymgenTextRender = ({
   const progressiveRender = (): React.ReactNode[] => {
     return splitHandlebarString(symgenText).map((segment, index) => {
       if (segment.isHandlebar) {
-        const template = Handlebars.compile(segment.cleanedString);
+        const template = Handlebars.compile(`{{{ ${segment.cleanedString} }}}`);
 
         let targetRef =
           segment.variables &&

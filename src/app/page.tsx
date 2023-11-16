@@ -241,13 +241,13 @@ const SymGenComponent = ({ symGenData, isSymGen }: SymGenComponentProps) => {
           <Label htmlFor="input">Prompt</Label>
           <Textarea
             id="input"
-            defaultValue={symGenData ? symGenData["prompt"] : ""}
+            value={symGenData ? symGenData["prompt"] : ""}
             className="flex-auto lg:max-h-80"
           />
         </div>
         <div className="flex flex-col space-y-2">
           <Label htmlFor="instructions">Generation</Label>
-          <div className="lg:min-h-80 rounded-md border px-3 py-2 text-sm h-80">
+          <ScrollArea className="lg:min-h-80 rounded-md border px-3 py-2 text-sm h-80">
             {/* {symGenData["symgenText"]} */}
             {symGenData ? (
               <SymgenTextRender
@@ -258,7 +258,7 @@ const SymGenComponent = ({ symGenData, isSymGen }: SymGenComponentProps) => {
                 jsonFieldRef={jsonFieldRef}
               />
             ) : null}
-          </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
