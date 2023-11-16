@@ -167,9 +167,10 @@ export function getFlattenedStringKeys(obj: any): string[] {
 
 interface SymGenComponentProps {
   symGenData?: Example;
+  isSymGen: boolean;
 }
 
-const SymGenComponent = ({ symGenData }: SymGenComponentProps) => {
+const SymGenComponent = ({ symGenData, isSymGen}: SymGenComponentProps) => {
   let items = symGenData
     ? getFlattenedStringKeys(symGenData["data"])
     : getFlattenedStringKeys(examples[0]["data"]);
@@ -222,7 +223,7 @@ const SymGenComponent = ({ symGenData }: SymGenComponentProps) => {
               <SymgenTextRender
                 symgenText={symGenData["symgenText"]}
                 data={symGenData["data"]}
-                isSymGen={true}
+                isSymGen={isSymGen}
                 entryId={symGenData["id"]}
                 jsonFieldRef={jsonFieldRef}
               />
@@ -287,10 +288,7 @@ const Playground = () => {
             <div className="md:order-1">
               <TabsContent value="default" className="mt-0 border-0 p-0">
                 <div className="flex h-full flex-col space-y-4">
-                  <Textarea
-                    placeholder="Write a tagline for an ice cream shop"
-                    className="min-h-[400px] flex-1 p-4 md:min-h-[700px] lg:min-h-[700px]"
-                  />
+                <SymGenComponent symGenData={selectedExample} isSymGen={false}/>
                   <div className="flex items-center space-x-2">
                     <TooltipProvider>
                       <Tooltip>
@@ -310,7 +308,7 @@ const Playground = () => {
               </TabsContent>
               <TabsContent value="symgen" className="mt-0 border-0 p-0">
                 <div className="flex flex-col space-y-4">
-                  <SymGenComponent symGenData={selectedExample} />
+                  <SymGenComponent symGenData={selectedExample} isSymGen={true}/>
                   <div className="flex items-center space-x-2">
                     <TooltipProvider>
                       <Tooltip>
