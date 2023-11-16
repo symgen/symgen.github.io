@@ -116,10 +116,9 @@ const Headline = () => (
       <span className="hidden sm:inline">Check our paper!</span>
       <ArrowRightIcon className="ml-1 h-4 w-4" />
     </Link>
-    <PageHeaderHeading className="hidden tracking-tight		 md:block">
+    <PageHeaderHeading className="tracking-tight">
       {TITLE}
     </PageHeaderHeading>
-    <PageHeaderHeading className="md:hidden">Examples</PageHeaderHeading>
     <PageHeaderDescription>
       We propose SymGen, a method enabling easier{" "}
       <em className="font-serif	">validation</em> of LLM&apos;s output.
@@ -229,8 +228,8 @@ const Playground = () => {
   const [selectedExample, setSelectedExample] = useState<Example>(examples[0]);
 
   return (
-    <>
-      <div className="hidden h-full flex-col md:flex">
+    <div className="">
+      <div className="h-full flex-col md:flex">
         <div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
           <h2 className="text-lg font-semibold">Playground</h2>
           <div className="ml-auto flex w-full space-x-2 sm:justify-end">
@@ -250,7 +249,7 @@ const Playground = () => {
       <Tabs defaultValue="symgen" className="flex-1">
         <div className="container h-full py-6">
           <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-            <div className="hidden flex-col space-y-4 sm:flex md:order-2">
+            <div className="flex-col space-y-4 sm:flex md:order-2">
               <div className="grid gap-2">
                 <HoverCard openDelay={200}>
                   <HoverCardTrigger asChild>
@@ -320,7 +319,7 @@ const Playground = () => {
           </div>
         </div>
       </Tabs>
-    </>
+    </div>
   );
 };
 
@@ -329,7 +328,7 @@ export default function Home() {
     <Theme>
       <div className="container min-h-screen relative p-16">
         <Headline />
-        <div className="overflow-hidden rounded-[0.5rem] border bg-background shadow">
+        <div className="rounded-[0.5rem] border bg-background shadow">
           <Playground />
         </div>
       </div>
