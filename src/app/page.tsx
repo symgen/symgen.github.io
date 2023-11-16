@@ -98,7 +98,7 @@ const AuthorHoverCard = (author: (typeof AUTHORS)[0]) => (
   <HoverCard openDelay={100} closeDelay={100}>
     <HoverCardTrigger className="pr-4" style={{marginLeft: 0}}>
       {/* <a href={author.website} target="_blank"> */}
-      <Button className="px-0" variant="link">{author.name}</Button>
+      <Button className="px-0" variant="link" onClick={()=>{open(author.website, '_blank')}}>{author.name}</Button>
       {/* </a> */}
     </HoverCardTrigger>
     <HoverCardContent>
@@ -123,7 +123,7 @@ const AuthorHoverCard = (author: (typeof AUTHORS)[0]) => (
 );
 
 const Headline = () => (
-  <PageHeader className="page-header pb-12 pt-4">
+  <PageHeader className="page-header pb-16 pt-0">
     <Link
       href={PAPER_URL}
       className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium"
@@ -138,7 +138,7 @@ const Headline = () => (
       We propose SymGen, a method enabling easier{" "}
       <em className="font-serif	">validation</em> of LLM&apos;s output.
     </PageHeaderDescription>
-    <Separator className="my-2" />
+    <Separator className="mb-0.25 mt-2" />
     <div className="flex flex-wrap justify-start items-start align-start space-x-4">
     {AUTHORS.map((author, index) => (
       <React.Fragment key={index}>
@@ -311,8 +311,7 @@ const Playground = () => {
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs overflow-wrap whitespace-normal text-left">
                           <p>
-                            Direct interaction with OpenAI API models will be
-                            supported soon.
+                            Direct interaction with OpenAI models will be supported soon.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -355,7 +354,6 @@ export default function Home() {
   return (
     <div className="container min-h-screen relative p-16">
       <Headline />
-
       <div className="rounded-[0.5rem] border bg-background shadow">
         <Playground />
       </div>
