@@ -277,7 +277,7 @@ export const SymgenTextRender = ({
                   <TooltipTrigger>
                     <code
                       data-reference={targetRef}
-                      className="rendered-span font-mono font-medium bg-blue-100 p-1 rounded-md hover:bg-blue-600 hover:text-gray-50 cursor-pointer"
+                      className="rendered-span font-mono bg-blue-100 py-0.5 px-1 rounded-md hover:bg-blue-600 hover:text-gray-50 cursor-pointer"
                       onMouseEnter={() => {
                         scrollToRefWithSegment(segment);
                         highlightRefWithSegment(segment);
@@ -285,6 +285,7 @@ export const SymgenTextRender = ({
                       onMouseLeave={() => {
                         dehighlightRefWithSegment(segment);
                       }}
+                      style={{fontSize: "0.8rem"}}
                     >
                       {template(data)}
                     </code>
