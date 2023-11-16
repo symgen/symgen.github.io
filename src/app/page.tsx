@@ -1,20 +1,8 @@
 "use client";
+import Link from 'next/link';
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import {
-  Text,
-  Strong,
-  Heading,
-  Link,
-  Avatar,
-  Flex,
-  Em,
-  Box,
-  Section,
-  Theme,
-} from "@radix-ui/themes";
-import {
   ArrowRightIcon,
-  CounterClockwiseClockIcon,
 } from "@radix-ui/react-icons";
 import { BadgeCheck } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -34,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   PageHeader,
@@ -105,6 +94,34 @@ const AUTHORS = [
 const PAPER_URL = "https://arxiv.org/abs/2311.09188";
 const BASE_PATH = "";
 
+const AuthorHoverCard = (author: (typeof AUTHORS)[0]) => (
+  <HoverCard openDelay={100} closeDelay={100}>
+    <HoverCardTrigger className="pr-4" style={{marginLeft: 0}}>
+      {/* <a href={author.website} target="_blank"> */}
+      <Button className="px-0" variant="link">{author.name}</Button>
+      {/* </a> */}
+    </HoverCardTrigger>
+    <HoverCardContent>
+      <div className="flex justify-between">
+        <Avatar className='mr-4'>
+          <AvatarImage src={author.avatar} />
+          <AvatarFallback>
+            {author.name[0]}
+          </AvatarFallback>
+        </Avatar>
+        <div className="space-y-1">
+          <h4 className="text-sm font-semibold">{author.name}</h4>
+          <p className="text-sm">{author.affiliation}</p>
+          <div className="flex items-center pt-2 overflow-wrap break-words">
+            <strong>Email: </strong>{" "}
+            <Link className="pl-0.5" href={`mailto:${author.email}`}>{author.email}</Link>
+          </div>
+        </div>
+      </div>
+    </HoverCardContent>
+  </HoverCard>
+);
+
 const Headline = () => (
   <PageHeader className="page-header pb-12 pt-4">
     <Link
@@ -116,13 +133,19 @@ const Headline = () => (
       <span className="hidden sm:inline">Check our paper!</span>
       <ArrowRightIcon className="ml-1 h-4 w-4" />
     </Link>
-    <PageHeaderHeading className="tracking-tight">
-      {TITLE}
-    </PageHeaderHeading>
+    <PageHeaderHeading className="tracking-tight">{TITLE}</PageHeaderHeading>
     <PageHeaderDescription>
       We propose SymGen, a method enabling easier{" "}
       <em className="font-serif	">validation</em> of LLM&apos;s output.
     </PageHeaderDescription>
+    <Separator className="my-2" />
+    <div className="flex flex-wrap justify-start items-start align-start space-x-4">
+    {AUTHORS.map((author, index) => (
+      <React.Fragment key={index}>
+        {AuthorHoverCard(author)}
+      </React.Fragment>
+    ))}
+    </div>
   </PageHeader>
 );
 
@@ -159,7 +182,7 @@ interface SymGenComponentProps {
   isSymGen: boolean;
 }
 
-const SymGenComponent = ({ symGenData, isSymGen}: SymGenComponentProps) => {
+const SymGenComponent = ({ symGenData, isSymGen }: SymGenComponentProps) => {
   let items = symGenData
     ? getFlattenedStringKeys(symGenData["data"])
     : getFlattenedStringKeys(examples[0]["data"]);
@@ -174,8 +197,7 @@ const SymGenComponent = ({ symGenData, isSymGen}: SymGenComponentProps) => {
     const newRefs = {} as Record<string, RefObject<HTMLDivElement>>;
     items.forEach((item) => {
       // Retain the ref for any item that still exists, otherwise create a new one
-      newRefs[item] =
-        jsonFieldRef.current[item] || React.createRef();
+      newRefs[item] = jsonFieldRef.current[item] || React.createRef();
     });
     jsonFieldRef.current = newRefs;
   }, [items]);
@@ -277,7 +299,10 @@ const Playground = () => {
             <div className="md:order-1">
               <TabsContent value="default" className="mt-0 border-0 p-0">
                 <div className="flex h-full flex-col space-y-4">
-                <SymGenComponent symGenData={selectedExample} isSymGen={false}/>
+                  <SymGenComponent
+                    symGenData={selectedExample}
+                    isSymGen={false}
+                  />
                   <div className="flex items-center space-x-2">
                     <TooltipProvider>
                       <Tooltip>
@@ -297,7 +322,10 @@ const Playground = () => {
               </TabsContent>
               <TabsContent value="symgen" className="mt-0 border-0 p-0">
                 <div className="flex flex-col space-y-4">
-                  <SymGenComponent symGenData={selectedExample} isSymGen={true}/>
+                  <SymGenComponent
+                    symGenData={selectedExample}
+                    isSymGen={true}
+                  />
                   <div className="flex items-center space-x-2">
                     <TooltipProvider>
                       <Tooltip>
@@ -325,13 +353,12 @@ const Playground = () => {
 
 export default function Home() {
   return (
-    <Theme>
-      <div className="container min-h-screen relative p-16">
-        <Headline />
-        <div className="rounded-[0.5rem] border bg-background shadow">
-          <Playground />
-        </div>
+    <div className="container min-h-screen relative p-16">
+      <Headline />
+
+      <div className="rounded-[0.5rem] border bg-background shadow">
+        <Playground />
       </div>
-    </Theme>
+    </div>
   );
 }
