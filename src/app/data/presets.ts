@@ -66,6 +66,7 @@ export type JsonValue =
 export interface Example {
   id: string;
   name: string;
+  type: TaskType;
   data: JsonValue;
   prompt: string;
   model: string;
@@ -76,7 +77,8 @@ export interface Example {
 export const examples: Example[] = [
   {
     id: "9cb0e66a-9937-465d-assd-2c4c4ae2401f",
-    name: "Financial data Question Answering",
+    name: "Financial Data Question Answering",
+    type: "QA",
     model: "gpt-4-0613",
     prompt:
       "What's the difference in the Forward P/E ratio between NVDA and BABA?",
@@ -187,9 +189,10 @@ export const examples: Example[] = [
     },
   },
   {
-    id: "9cb0e66a-9937-465d-assd-2c4c4ae2401f",
-    name: "Financial data Question Answering",
+    id: "9cb0e66a-9937-465d-afsd-2c4c4ae2401f",
+    name: "Financial Data Question Answering",
     model: "gpt-4-0613",
+    type: "QA",
     prompt: "How do ORCL and GOOG's EBITDA multiples compare?",
     baselineText:
       "The 50-day moving average for Amazon.com Inc (AMZN) is 132.31 USD, while for Taiwan Semiconductor Manufacturing (TSM) it is 90.2 USD. Therefore, AMZN's 50-day moving average is higher than TSM's.",

@@ -26,7 +26,6 @@ import Handlebars from "handlebars";
 import { Example } from "./data/presets";
 import "./symgen.css";
 
-
 export type JsonValue =
   | string
   | number
@@ -53,58 +52,68 @@ export const JsonDisplay = ({
     value: JsonValue,
     index: number,
     parentFields: Array<string | number> = []
-  ): React.ReactNode => (
-    <div className="flex json-entry" ref={jsonFieldRef.current[parentFields.toString()]}>
-      <div 
-        key={`${entryId}-${parentFields.toString()}`}
-        className="w-1/5 json-field border-t py-2 overflow-wrap break-words text-left pl-2"
+  ): React.ReactNode => {
+    if (jsonFieldRef.current[parentFields.toString()] === undefined) {
+      jsonFieldRef.current[parentFields.toString()] = React.createRef();
+    }
+    return (
+      <div
+        className="flex json-entry"
+        ref={jsonFieldRef.current[parentFields.toString()]}
       >
-        <strong key={`${entryId}-${parentFields.toString()}-key`}>{key}</strong>
-        {/* <Strong>{parentFields.toString()}</Strong> */}
+        <div
+          key={`${entryId}-${parentFields.toString()}`}
+          className="w-1/5 json-field border-t py-2 overflow-wrap break-words text-left pl-2"
+        >
+          <strong key={`${entryId}-${parentFields.toString()}-key`}>
+            {key}
+          </strong>
+          {/* <Strong>{parentFields.toString()}</Strong> */}
+        </div>
+        <div className="w-4/5">
+          {typeof value === "string" || typeof value === "number" ? (
+            <div
+              key={`${entryId}-${parentFields.toString()}-value`}
+              className="json-value border-t py-2 "
+            >
+              <code className="font-mono p-1 rounded-md text-xs">
+                {value.toString()}
+              </code>
+            </div>
+          ) : Array.isArray(value) ? (
+            <JsonDisplay
+              data={Object.assign(
+                {},
+                ...value.map((item, index) => ({ [index]: item }))
+              )}
+              jsonFieldRef={jsonFieldRef}
+              parentFields={parentFields.slice(0, -1).concat([key])}
+              entryId={entryId}
+            />
+          ) : typeof value === "object" && value !== null ? (
+            <JsonDisplay
+              data={value}
+              jsonFieldRef={jsonFieldRef}
+              parentFields={parentFields.slice(0, -1).concat([key])}
+              entryId={entryId}
+            />
+          ) : value == null ? (
+            <div
+              key={`${entryId}-${parentFields.toString()}-value`}
+              className="json-value"
+            >
+              null
+            </div>
+          ) : (
+            <div
+              key={`${entryId}-${parentFields.toString()}-value`}
+              className="json-value"
+            >{`${key}: [Unsupported Type]`}</div>
+          )}
+        </div>
       </div>
-      <div className="w-4/5">
-        {typeof value === "string" || typeof value === "number" ? (
-          <div
-            key={`${entryId}-${parentFields.toString()}-value`}
-            className="json-value border-t py-2 "
-          >
-            <code className="font-mono p-1 rounded-md text-xs">
-              {value.toString()}
-            </code>
-          </div>
-        ) : Array.isArray(value) ? (
-          <JsonDisplay
-            data={Object.assign(
-              {},
-              ...value.map((item, index) => ({ [index]: item }))
-            )}
-            jsonFieldRef={jsonFieldRef}
-            parentFields={parentFields.slice(0, -1).concat([key])}
-            entryId={entryId}
-          />
-        ) : typeof value === "object" && value !== null ? (
-          <JsonDisplay
-            data={value}
-            jsonFieldRef={jsonFieldRef}
-            parentFields={parentFields.slice(0, -1).concat([key])}
-            entryId={entryId}
-          />
-        ) : value == null ? (
-          <div
-            key={`${entryId}-${parentFields.toString()}-value`}
-            className="json-value"
-          >
-            null
-          </div>
-        ) : (
-          <div
-            key={`${entryId}-${parentFields.toString()}-value`}
-            className="json-value"
-          >{`${key}: [Unsupported Type]`}</div>
-        )}
-      </div>
-    </div>
-  );
+    );
+  };
 
   if (typeof data === "object" && !Array.isArray(data) && data !== null) {
     return (
@@ -121,7 +130,7 @@ export const JsonDisplay = ({
   }
 };
 
-type symgenTextSegments = {
+type symgenTextSegment = {
   isHandlebar: boolean;
   originalString: string;
   cleanedString?: string;
@@ -167,7 +176,7 @@ const processHandlebarSpan = (
   }
 };
 
-const splitHandlebarString = (symgenText: string): symgenTextSegments[] => {
+const splitHandlebarString = (symgenText: string): symgenTextSegment[] => {
   const handlebarRegex = /(^|[^{])\{\{[^{}]*\}\}(?!\})/g;
   let lastIndex = 0;
   const output = [];
@@ -209,7 +218,7 @@ const splitHandlebarString = (symgenText: string): symgenTextSegments[] => {
 interface SymGenTextRenderProps {
   symgenText: string;
   data: JsonValue;
-  jsonFieldRef:React.MutableRefObject<RefsMap<HTMLDivElement>>;
+  jsonFieldRef: React.MutableRefObject<RefsMap<HTMLDivElement>>;
   isSymGen: boolean;
   entryId: string;
 }
@@ -221,22 +230,35 @@ export const SymgenTextRender = ({
   isSymGen,
   entryId,
 }: SymGenTextRenderProps) => {
-  const scrollToRef = (ref: RefObject<HTMLDivElement>) => {
-    isSymGen &&
+  const scrollToRefWithSegment = (segment: symgenTextSegment) => {
+    if (isSymGen) {
+      let ref =
+        segment.variables &&
+        jsonFieldRef.current[segment.variables?.toString()];
       ref.current &&
-      ref.current.scrollIntoView({
-        behavior: "smooth",
-      });
+        ref.current.scrollIntoView({
+          behavior: "smooth",
+        });
+    }
   };
 
-  const highlightRef = (ref: RefObject<HTMLDivElement>) => {
-    console.log("highlighting");
-    console.log(isSymGen);
-    isSymGen && ref.current && ref.current.classList.add("is-highlight");
+  const highlightRefWithSegment = (segment: symgenTextSegment) => {
+    if (isSymGen) {
+      let ref =
+        segment.variables &&
+        jsonFieldRef.current[segment.variables?.toString()];
+
+      ref.current && ref.current.classList.add("is-highlight");
+    }
   };
 
-  const dehighlightRef = (ref: RefObject<HTMLDivElement>) => {
-    isSymGen && ref.current && ref.current.classList.remove("is-highlight");
+  const dehighlightRefWithSegment = (segment: symgenTextSegment) => {
+    if (isSymGen) {
+      let ref =
+        segment.variables &&
+        jsonFieldRef.current[segment.variables?.toString()];
+      ref.current && ref.current.classList.remove("is-highlight");
+    }
   };
 
   const progressiveRender = (): React.ReactNode[] => {
@@ -255,19 +277,19 @@ export const SymgenTextRender = ({
                 <Tooltip>
                   <TooltipTrigger>
                     <code
-                      className="rendered-span"
-                        onMouseEnter={() => {
-                          targetRef && scrollToRef(targetRef);
-                          targetRef && highlightRef(targetRef);
-                        }}
-                        onMouseLeave={() => {
-                          targetRef && dehighlightRef(targetRef);
-                        }}
+                      data-reference={targetRef}
+                      className="rendered-span font-mono font-medium bg-gray-100 p-1 rounded-md hover:bg-blue-500 hover:text-gray-50 cursor-pointer"
+                      onMouseEnter={() => {
+                        scrollToRefWithSegment(segment);
+                        highlightRefWithSegment(segment);
+                      }}
+                      onMouseLeave={() => {
+                        dehighlightRefWithSegment(segment);
+                      }}
                     >
                       {template(data)}
                     </code>
                   </TooltipTrigger>
-
                   <TooltipContent className="TooltipContent" sideOffset={5}>
                     {segment.cleanedString}
                   </TooltipContent>
@@ -278,12 +300,16 @@ export const SymgenTextRender = ({
             return <Text key={`${entryId}-${index}`}>{template(data)}</Text>;
           }
         } catch (e: any) {
-          return <code key={`${entryId}-${index}`}>{segment.originalString}</code>;
+          return (
+            <code key={`${entryId}-${index}`}>{segment.originalString}</code>
+          );
         }
       } else {
-        return <Text key={`${entryId}-${index}`}>{segment.originalString}</Text>;
+        return (
+          <Text key={`${entryId}-${index}`}>{segment.originalString}</Text>
+        );
       }
     });
   };
-  return <div>{progressiveRender()}</div>;
+  return <div className="leading-6">{progressiveRender()}</div>;
 };

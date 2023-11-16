@@ -26,7 +26,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { Preset } from "../data/presets";
+import { Preset, Example, types } from "../data/presets";
 
 export const useMutationObserver = (
   ref: React.MutableRefObject<HTMLElement | null>,
@@ -48,16 +48,19 @@ export const useMutationObserver = (
 };
 
 interface ExampleSelectorProps extends PopoverProps {
-  examples: Preset[];
+  examples: Example[];
+  selectedExample: Example | undefined;
+  setSelectedExample: (example: Example) => void;
 }
 
 export function ExampleSelector({
   examples,
+  selectedExample,
+  setSelectedExample,
   ...props
 }: ExampleSelectorProps) {
+  const allExampleNames = [...new Set(examples.map((example) => example.name))];
   const [open, setOpen] = React.useState(false);
-  const [selectedExample, setSelectedExample] = React.useState<Preset>(
-  );
   const [peekedExample, setPeekedExample] = React.useState<Preset>(examples[0]);
 
   return (
@@ -71,47 +74,39 @@ export function ExampleSelector({
             aria-label="Select a model"
             className="w-full justify-between"
           >
-            {selectedExample ? selectedExample.name : "Select a task with generated examples..."}
+            {selectedExample
+              ? selectedExample.prompt
+              : "Select a task with generated examples..."}
             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-[250px] p-0">
-          <HoverCard>
-            <HoverCardContent
-              side="left"
-              align="start"
-              forceMount
-              className="min-h-[280px]"
-            >
-              <div className="grid gap-2">
-                <h4 className="font-medium leading-none">
-                  {peekedExample.name}
-                </h4>
-                <div className="text-sm text-muted-foreground">
-                  {peekedExample.description}
-                </div>
-              </div>
-            </HoverCardContent>
-            <Command loop>
-              <CommandList className="h-[var(--cmdk-list-height)] max-h-[400px]">
-                <CommandInput placeholder="Search Examples..." />
-                <CommandEmpty>No Example found.</CommandEmpty>
-                <HoverCardTrigger />
-                {examples.map((example) => (
-                  <ModelItem
-                    key={example.id}
-                    model={example}
-                    isSelected={selectedExample?.id === example.id}
-                    onPeek={(example) => setPeekedExample(example)}
-                    onSelect={() => {
-                      setSelectedExample(example);
-                      setOpen(false);
-                    }}
-                  />
-                ))}
-              </CommandList>
-            </Command>
-          </HoverCard>
+          <Command loop>
+            <CommandList className="h-[var(--cmdk-list-height)] max-h-[400px]">
+              <CommandInput placeholder="Search Examples..." />
+              <CommandEmpty>No Example found.</CommandEmpty>
+              {allExampleNames.map((name) => (
+                <CommandGroup key={name} heading={name}>
+                  {examples
+                    .filter((example) => example.name === name)
+                    .map((example) => {
+                      return (
+                        <ModelItem
+                          key={example.id}
+                          model={example}
+                          isSelected={selectedExample?.id === example.id}
+                          onPeek={(example) => setPeekedExample(example)}
+                          onSelect={() => {
+                            setSelectedExample(example);
+                            setOpen(false);
+                          }}
+                        />
+                      );
+                    })}
+                </CommandGroup>
+              ))}
+            </CommandList>
+          </Command>
         </PopoverContent>
       </Popover>
     </div>
@@ -119,7 +114,7 @@ export function ExampleSelector({
 }
 
 interface ModelItemProps {
-  model: Preset;
+  model: Example;
   isSelected: boolean;
   onSelect: () => void;
   onPeek: (model: Preset) => void;
@@ -143,9 +138,9 @@ function ModelItem({ model, isSelected, onSelect, onPeek }: ModelItemProps) {
       key={model.id}
       onSelect={onSelect}
       ref={ref}
-      className="aria-selected:bg-primary aria-selected:text-primary-foreground"
+      className="aria-selected:bg-primary aria-selected:text-primary-foreground text-xs"
     >
-      {model.name}
+      {model.prompt}
       <CheckIcon
         className={cn(
           "ml-auto h-4 w-4",

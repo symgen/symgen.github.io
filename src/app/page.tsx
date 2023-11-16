@@ -1,5 +1,5 @@
 "use client";
-import React, { RefObject, useRef, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import {
   Text,
   Strong,
@@ -52,7 +52,7 @@ import { JsonDisplay, SymgenTextRender } from "./symgen";
 import { cn } from "@/lib/utils";
 
 import { models, types } from "./data/models";
-import { presets, examples, Example } from "./data/presets";
+import { presets, examples, Example, Preset } from "./data/presets";
 
 const TITLE = "Towards Verifiable Text Generation with Symbolic References";
 
@@ -161,28 +161,47 @@ export function getFlattenedKeys(
   return keys;
 }
 
+export function getFlattenedStringKeys(obj: any): string[] {
+  return getFlattenedKeys(obj).map((key) => key.toString());
+}
+
 interface SymGenComponentProps {
-  symGenData: Example;
+  symGenData?: Example;
 }
 
 const SymGenComponent = ({ symGenData }: SymGenComponentProps) => {
-
-  const jsonFieldRef = useRef(
-    getFlattenedKeys(symGenData["data"], []).reduce<RefsMap<HTMLDivElement>>(
-      (acc, element) => {
-        acc[element.toString()] = React.createRef();
-        return acc;
-      },
-      {}
-    )
+  let items = symGenData
+    ? getFlattenedStringKeys(symGenData["data"])
+    : getFlattenedStringKeys(examples[0]["data"]);
+  const jsonFieldRef = useRef<Record<string, RefObject<HTMLDivElement>>>(
+    items.reduce((acc, item) => {
+      acc[item] = React.createRef();
+      return acc;
+    }, {})
   );
+
+  useEffect(() => {
+    const newRefs = {};
+    items.forEach((item) => {
+      // Retain the ref for any item that still exists, otherwise create a new one
+      newRefs[item] =
+        jsonFieldRef.current[item] || React.createRef();
+    });
+    jsonFieldRef.current = newRefs;
+  }, [items]);
 
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex flex-col space-y-2 max-h-[500px] w-full">
         <Label htmlFor="input">JSON</Label>
         <ScrollArea className="h-72 w-full p-6 rounded-md border text-sm">
-          <JsonDisplay data={symGenData["data"]} entryId={symGenData["id"] } jsonFieldRef={jsonFieldRef} />
+          {symGenData ? (
+            <JsonDisplay
+              data={symGenData["data"]}
+              entryId={symGenData["id"]}
+              jsonFieldRef={jsonFieldRef}
+            />
+          ) : null}
         </ScrollArea>
       </div>
 
@@ -191,7 +210,7 @@ const SymGenComponent = ({ symGenData }: SymGenComponentProps) => {
           <Label htmlFor="input">Prompt</Label>
           <Textarea
             id="input"
-            defaultValue={symGenData["prompt"]}
+            defaultValue={symGenData ? symGenData["prompt"] : ""}
             className="flex-auto lg:max-h-80"
           />
         </div>
@@ -199,13 +218,15 @@ const SymGenComponent = ({ symGenData }: SymGenComponentProps) => {
           <Label htmlFor="instructions">Generation</Label>
           <div className="lg:min-h-80 rounded-md border px-3 py-2 text-sm h-80">
             {/* {symGenData["symgenText"]} */}
-            <SymgenTextRender
-              symgenText={symGenData["symgenText"]}
-              data={symGenData["data"]}
-              isSymGen={true}
-              entryId={symGenData["id"]}
-              jsonFieldRef={jsonFieldRef}
-            />
+            {symGenData ? (
+              <SymgenTextRender
+                symgenText={symGenData["symgenText"]}
+                data={symGenData["data"]}
+                isSymGen={true}
+                entryId={symGenData["id"]}
+                jsonFieldRef={jsonFieldRef}
+              />
+            ) : null}
           </div>
         </div>
       </div>
@@ -214,17 +235,23 @@ const SymGenComponent = ({ symGenData }: SymGenComponentProps) => {
 };
 
 const Playground = () => {
+  const [selectedExample, setSelectedExample] = useState<Example>();
+
   return (
     <>
       <div className="hidden h-full flex-col md:flex">
         <div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
           <h2 className="text-lg font-semibold">Playground</h2>
           <div className="ml-auto flex w-full space-x-2 sm:justify-end">
-            <ExampleSelector examples={presets} />
-            <div className="hidden space-x-2 md:flex">
+            <ExampleSelector
+              examples={examples}
+              selectedExample={selectedExample}
+              setSelectedExample={setSelectedExample}
+            />
+            {/* <div className="hidden space-x-2 md:flex">
               <CodeViewer />
             </div>
-            <PresetActions />
+            <PresetActions /> */}
           </div>
         </div>
       </div>
@@ -283,7 +310,7 @@ const Playground = () => {
               </TabsContent>
               <TabsContent value="symgen" className="mt-0 border-0 p-0">
                 <div className="flex flex-col space-y-4">
-                  <SymGenComponent symGenData={examples[0]} />
+                  <SymGenComponent symGenData={selectedExample} />
                   <div className="flex items-center space-x-2">
                     <TooltipProvider>
                       <Tooltip>
