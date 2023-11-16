@@ -127,7 +127,7 @@ const Headline = () => (
   </PageHeader>
 );
 
-export function getFlattenedKeys(
+function getFlattenedKeys(
   obj: any,
   prefix: (string | number)[] = []
 ): (string | number)[][] {
@@ -151,7 +151,7 @@ export function getFlattenedKeys(
   return keys;
 }
 
-export function getFlattenedStringKeys(obj: any): string[] {
+function getFlattenedStringKeys(obj: any): string[] {
   return getFlattenedKeys(obj).map((key) => key.toString());
 }
 
@@ -168,11 +168,11 @@ const SymGenComponent = ({ symGenData, isSymGen}: SymGenComponentProps) => {
     items.reduce((acc, item) => {
       acc[item] = React.createRef();
       return acc;
-    }, {})
+    }, {} as Record<string, RefObject<HTMLDivElement>>)
   );
 
   useEffect(() => {
-    const newRefs = {};
+    const newRefs = {} as Record<string, RefObject<HTMLDivElement>>;
     items.forEach((item) => {
       // Retain the ref for any item that still exists, otherwise create a new one
       newRefs[item] =

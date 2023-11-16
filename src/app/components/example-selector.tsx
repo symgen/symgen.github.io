@@ -59,7 +59,7 @@ export function ExampleSelector({
   setSelectedExample,
   ...props
 }: ExampleSelectorProps) {
-  const allExampleNames = [...new Set(examples.map((example) => example.name))];
+  const allExampleNames = Array.from(new Set(examples.map((example) => example.name)));
   const [open, setOpen] = React.useState(false);
   const [peekedExample, setPeekedExample] = React.useState<Preset>(examples[0]);
 

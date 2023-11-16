@@ -24,7 +24,6 @@ import {
 
 import Handlebars from "handlebars";
 import { Example } from "./data/presets";
-import "./symgen.css";
 
 export type JsonValue =
   | string
@@ -37,7 +36,7 @@ export type JsonValue =
 interface JsonDisplayProps {
   data: JsonValue;
   entryId: string;
-  jsonFieldRef: React.MutableRefObject<RefsMap<HTMLDivElement>>;
+  jsonFieldRef: React.MutableRefObject<Record<string, RefObject<HTMLDivElement>>>
   parentFields?: Array<string | number>;
 }
 
@@ -218,7 +217,7 @@ const splitHandlebarString = (symgenText: string): symgenTextSegment[] => {
 interface SymGenTextRenderProps {
   symgenText: string;
   data: JsonValue;
-  jsonFieldRef: React.MutableRefObject<RefsMap<HTMLDivElement>>;
+  jsonFieldRef: React.MutableRefObject<Record<string, RefObject<HTMLDivElement>>>;
   isSymGen: boolean;
   entryId: string;
 }
@@ -235,7 +234,7 @@ export const SymgenTextRender = ({
       let ref =
         segment.variables &&
         jsonFieldRef.current[segment.variables?.toString()];
-      ref.current &&
+      ref && ref.current &&
         ref.current.scrollIntoView({
           behavior: "smooth",
         });
@@ -248,7 +247,7 @@ export const SymgenTextRender = ({
         segment.variables &&
         jsonFieldRef.current[segment.variables?.toString()];
 
-      ref.current && ref.current.classList.add("is-highlight");
+      ref && ref.current && ref.current.classList.add("is-highlight");
     }
   };
 
@@ -257,7 +256,7 @@ export const SymgenTextRender = ({
       let ref =
         segment.variables &&
         jsonFieldRef.current[segment.variables?.toString()];
-      ref.current && ref.current.classList.remove("is-highlight");
+      ref && ref.current && ref.current.classList.remove("is-highlight");
     }
   };
 
