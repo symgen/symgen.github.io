@@ -102,12 +102,13 @@ const AUTHORS = [
   },
 ];
 
+const PAPER_URL = "https://arxiv.org/abs/2311.09188";
 const BASE_PATH = "";
 
 const Headline = () => (
   <PageHeader className="page-header pb-12 pt-4">
     <Link
-      href="/docs/changelog"
+      href={PAPER_URL}
       className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium"
     >
       🎉 <Separator className="mx-2 h-4" orientation="vertical" />{" "}
@@ -123,17 +124,6 @@ const Headline = () => (
       We propose SymGen, a method enabling easier{" "}
       <em className="font-serif	">validation</em> of LLM&apos;s output.
     </PageHeaderDescription>
-    <section className="flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
-      <Link href="/docs" className={cn(buttonVariants(), "rounded-[6px]")}>
-        Details
-      </Link>
-      <Link
-        href="/components"
-        className={cn(buttonVariants({ variant: "outline" }), "rounded-[6px]")}
-      >
-        Components
-      </Link>
-    </section>
   </PageHeader>
 );
 
@@ -236,7 +226,7 @@ const SymGenComponent = ({ symGenData, isSymGen}: SymGenComponentProps) => {
 };
 
 const Playground = () => {
-  const [selectedExample, setSelectedExample] = useState<Example>();
+  const [selectedExample, setSelectedExample] = useState<Example>(examples[0]);
 
   return (
     <>
