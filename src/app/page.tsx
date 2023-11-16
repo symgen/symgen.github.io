@@ -1,9 +1,8 @@
 "use client";
-import Link from 'next/link';
+import Link from "next/link";
+
 import React, { RefObject, useEffect, useRef, useState } from "react";
-import {
-  ArrowRightIcon,
-} from "@radix-ui/react-icons";
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { BadgeCheck } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -96,25 +95,33 @@ const BASE_PATH = "";
 
 const AuthorHoverCard = (author: (typeof AUTHORS)[0]) => (
   <HoverCard openDelay={100} closeDelay={100}>
-    <HoverCardTrigger className="pr-4" style={{marginLeft: 0}}>
+    <HoverCardTrigger className="pr-4" style={{ marginLeft: 0 }}>
       {/* <a href={author.website} target="_blank"> */}
-      <Button className="px-0" variant="link" onClick={()=>{open(author.website, '_blank')}}>{author.name}</Button>
+      <Button
+        className="px-0"
+        variant="link"
+        onClick={() => {
+          open(author.website, "_blank");
+        }}
+      >
+        {author.name}
+      </Button>
       {/* </a> */}
     </HoverCardTrigger>
     <HoverCardContent>
       <div className="flex justify-between">
-        <Avatar className='mr-4'>
+        <Avatar className="mr-4">
           <AvatarImage src={author.avatar} />
-          <AvatarFallback>
-            {author.name[0]}
-          </AvatarFallback>
+          <AvatarFallback>{author.name[0]}</AvatarFallback>
         </Avatar>
         <div className="space-y-1">
           <h4 className="text-sm font-semibold">{author.name}</h4>
           <p className="text-sm">{author.affiliation}</p>
           <div className="flex items-center pt-2 overflow-wrap break-words">
             <strong>Email: </strong>{" "}
-            <Link className="pl-0.5" href={`mailto:${author.email}`}>{author.email}</Link>
+            <Link className="pl-0.5" href={`mailto:${author.email}`}>
+              {author.email}
+            </Link>
           </div>
         </div>
       </div>
@@ -123,7 +130,7 @@ const AuthorHoverCard = (author: (typeof AUTHORS)[0]) => (
 );
 
 const Headline = () => (
-  <PageHeader className="page-header pb-16 pt-0">
+  <PageHeader className="page-header pb-2 pt-0">
     <Link
       href={PAPER_URL}
       className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium"
@@ -140,12 +147,24 @@ const Headline = () => (
     </PageHeaderDescription>
     <Separator className="mb-0.25 mt-2" />
     <div className="flex flex-wrap justify-start items-start align-start space-x-4">
-    {AUTHORS.map((author, index) => (
-      <React.Fragment key={index}>
-        {AuthorHoverCard(author)}
-      </React.Fragment>
-    ))}
+      {AUTHORS.map((author, index) => (
+        <React.Fragment key={index}>{AuthorHoverCard(author)}</React.Fragment>
+      ))}
     </div>
+    <section className="flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
+      <Link
+        href="#interactive-demo"
+        className={cn(buttonVariants(), "rounded-[6px]")}
+      >
+        Interactive Demo
+      </Link>
+      <Link
+        href={PAPER_URL}
+        className={cn(buttonVariants({ variant: "outline" }), "rounded-[6px]")}
+      >
+        Paper
+      </Link>
+    </section>
   </PageHeader>
 );
 
@@ -253,7 +272,9 @@ const Playground = () => {
     <div className="">
       <div className="h-full flex-col md:flex">
         <div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
-          <h2 className="text-lg font-semibold">Playground</h2>
+          <h2 className="text-lg font-semibold w-full" id="interactive-demo">
+            SymGen Interactive Demo
+          </h2>
           <div className="ml-auto flex w-full space-x-2 sm:justify-end">
             <ExampleSelector
               examples={examples}
@@ -311,7 +332,8 @@ const Playground = () => {
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs overflow-wrap whitespace-normal text-left">
                           <p>
-                            Direct interaction with OpenAI models will be supported soon.
+                            Direct interaction with OpenAI models will be
+                            supported soon.
                           </p>
                         </TooltipContent>
                       </Tooltip>
